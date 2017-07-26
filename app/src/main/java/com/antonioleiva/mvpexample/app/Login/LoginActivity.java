@@ -35,6 +35,7 @@ public class LoginActivity extends Activity implements LoginView, View.OnClickLi
     private EditText password;
     private LoginPresenter presenter;
 
+
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -74,6 +75,6 @@ public class LoginActivity extends Activity implements LoginView, View.OnClickLi
     }
 
     @Override public void onClick(View v) {
-        presenter.validateCredentials(username.getText().toString(), password.getText().toString());
+        presenter.validateCredentials(username.getText().toString(), password.getText().toString(), this.getApplicationContext());
     }
 }

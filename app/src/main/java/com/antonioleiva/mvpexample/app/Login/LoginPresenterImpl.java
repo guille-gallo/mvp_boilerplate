@@ -18,6 +18,8 @@
 
 package com.antonioleiva.mvpexample.app.Login;
 
+import android.content.Context;
+
 public class LoginPresenterImpl implements LoginPresenter, LoginInteractor.OnLoginFinishedListener {
 
     private LoginView loginView;
@@ -28,12 +30,12 @@ public class LoginPresenterImpl implements LoginPresenter, LoginInteractor.OnLog
         this.loginInteractor = new LoginInteractorImpl();
     }
 
-    @Override public void validateCredentials(String username, String password) {
+    @Override public void validateCredentials(String username, String password, Context context) {
         if (loginView != null) {
             loginView.showProgress();
         }
 
-        loginInteractor.login(username, password, this);
+        loginInteractor.login(username, password, this, context);
     }
 
     @Override public void onDestroy() {

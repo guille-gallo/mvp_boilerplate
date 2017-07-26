@@ -18,8 +18,10 @@
 
 package com.antonioleiva.mvpexample.app.Login;
 
+import android.content.Context;
+
 public interface LoginPresenter {
-    void validateCredentials(String username, String password);
+    void validateCredentials(String username, String password, Context context);
 
     void onDestroy();
 }

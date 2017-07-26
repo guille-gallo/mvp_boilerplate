@@ -18,6 +18,8 @@
 
 package com.antonioleiva.mvpexample.app.Login;
 
+import android.content.Context;
+
 public interface LoginInteractor {
 
     interface OnLoginFinishedListener {
@@ -28,6 +30,5 @@ public interface LoginInteractor {
         void onSuccess();
     }
 
-    void login(String username, String password, OnLoginFinishedListener listener);
-
+    void login(String username, String password, OnLoginFinishedListener listener, Context context);
 }
