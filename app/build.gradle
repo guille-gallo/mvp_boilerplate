@@ -23,4 +23,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.0.90-beta'
     compile project(':volley')
+    compile 'com.google.android.gms:play-services:9.0.2'
 }

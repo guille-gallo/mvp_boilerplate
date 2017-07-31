@@ -25,7 +25,7 @@ public class LoginPresenterImpl implements LoginPresenter, LoginInteractor.OnLog
     private LoginView loginView;
     private LoginInteractor loginInteractor;
 
-    public LoginPresenterImpl(LoginView loginView) {
+    public LoginPresenterImpl(LoginView loginView, Context context) {
         this.loginView = loginView;
         this.loginInteractor = new LoginInteractorImpl();
     }

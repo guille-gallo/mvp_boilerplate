@@ -19,6 +19,7 @@
 package com.antonioleiva.mvpexample.app.Login;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -34,7 +35,7 @@ public class LoginActivity extends Activity implements LoginView, View.OnClickLi
     private EditText username;
     private EditText password;
     private LoginPresenter presenter;
-
+    private Context context;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,8 +45,8 @@ public class LoginActivity extends Activity implements LoginView, View.OnClickLi
         username = (EditText) findViewById(R.id.username);
         password = (EditText) findViewById(R.id.password);
         findViewById(R.id.button).setOnClickListener(this);
-
-        presenter = new LoginPresenterImpl(this);
+        context = this.getApplicationContext();
+        presenter = new LoginPresenterImpl(this, context);
     }
 
     @Override protected void onDestroy() {

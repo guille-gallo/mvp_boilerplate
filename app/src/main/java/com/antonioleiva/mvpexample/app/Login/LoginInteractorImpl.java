@@ -1,26 +1,37 @@
 package com.antonioleiva.mvpexample.app.Login;
 
 import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 import android.text.TextUtils;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.antonioleiva.mvpexample.app.main.VolleyClient;
-
-import org.json.JSONArray;
-import org.json.JSONException;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 
-
 public class LoginInteractorImpl implements LoginInteractor {
 
-    ArrayList datos = new ArrayList();
+    private ArrayList datos = new ArrayList();
+    private GoogleApiClient mGoogleApiClient;
+    private Location mLocation;
+    private LocationManager locationManager;
+    private LocationRequest mLocationRequest;
+    private GoogleApiClient.ConnectionCallbacks connectionCallbacks;
+    private GoogleApiClient.OnConnectionFailedListener connectionFailedListener;
+
 
     @Override
     public void login(final String username, final String password, final OnLoginFinishedListener listener, final Context context) {
+        mGoogleApiClient = new GoogleApiClient.Builder(context)
+                .addConnectionCallbacks(connectionCallbacks)
+                .addOnConnectionFailedListener(connectionFailedListener)
+                .addApi(LocationServices.API)
+                .build();
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+
+
         boolean error = false;
         if (TextUtils.isEmpty(username)){
             listener.onUsernameError();
@@ -34,7 +45,7 @@ public class LoginInteractorImpl implements LoginInteractor {
         }
         if (!error){
 
-            String url = "https://api.myjson.com/bins/zuj5h";
+            /*String url = "https://api.myjson.com/bins/zuj5h";
             JsonArrayRequest jsArrayRequest = new JsonArrayRequest (Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
@@ -44,17 +55,17 @@ public class LoginInteractorImpl implements LoginInteractor {
                             String userLastName = response.getJSONObject(i).getString("Last Name");
                             String userID = response.getJSONObject(i).getString("ID");
 
-                            /*
+                            *//*
                             * popular List/Arraylist, mandarlo a listener.onSuccess();
-                            * */
+                            * *//*
                             //datos.add(userFirstName, userLastName, userID);
                             //listener.onSuccess();
                         } catch (JSONException ex) {
                             System.out.println(ex);
                         }
                     }
-                    /*adapter.notifyDataSetChanged();
-                    hideProgressBar();*/
+                    *//*adapter.notifyDataSetChanged();
+                    hideProgressBar();*//*
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -64,7 +75,7 @@ public class LoginInteractorImpl implements LoginInteractor {
                 }
             });
             // Access the RequestQueue through your singleton class.
-            VolleyClient.getInstance(context).addToRequestQueue(jsArrayRequest);
+            VolleyClient.getInstance(context).addToRequestQueue(jsArrayRequest);*/
         }
     }
 }
