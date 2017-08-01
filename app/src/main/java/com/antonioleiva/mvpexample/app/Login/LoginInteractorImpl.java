@@ -1,37 +1,16 @@
 package com.antonioleiva.mvpexample.app.Login;
 
 import android.content.Context;
-import android.location.Location;
-import android.location.LocationManager;
 import android.text.TextUtils;
-
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 
 public class LoginInteractorImpl implements LoginInteractor {
 
     private ArrayList datos = new ArrayList();
-    private GoogleApiClient mGoogleApiClient;
-    private Location mLocation;
-    private LocationManager locationManager;
-    private LocationRequest mLocationRequest;
-    private GoogleApiClient.ConnectionCallbacks connectionCallbacks;
-    private GoogleApiClient.OnConnectionFailedListener connectionFailedListener;
-
 
     @Override
     public void login(final String username, final String password, final OnLoginFinishedListener listener, final Context context) {
-        mGoogleApiClient = new GoogleApiClient.Builder(context)
-                .addConnectionCallbacks(connectionCallbacks)
-                .addOnConnectionFailedListener(connectionFailedListener)
-                .addApi(LocationServices.API)
-                .build();
-        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-
-
         boolean error = false;
         if (TextUtils.isEmpty(username)){
             listener.onUsernameError();
@@ -44,7 +23,7 @@ public class LoginInteractorImpl implements LoginInteractor {
             return;
         }
         if (!error){
-
+            listener.onSuccess();
             /*String url = "https://api.myjson.com/bins/zuj5h";
             JsonArrayRequest jsArrayRequest = new JsonArrayRequest (Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
                 @Override
