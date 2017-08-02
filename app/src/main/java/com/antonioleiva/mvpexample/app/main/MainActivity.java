@@ -19,7 +19,6 @@
 package com.antonioleiva.mvpexample.app.main;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -30,14 +29,15 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.antonioleiva.mvpexample.app.R;
@@ -45,11 +45,19 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
-public class MainActivity extends Activity implements MainView, AdapterView.OnItemClickListener,GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
+public class MainActivity extends AppCompatActivity implements MainView,
+        AdapterView.OnItemClickListener,GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        com.google.android.gms.location.LocationListener,
+        OnMapReadyCallback {
 
     private ListView listView;
     private ProgressBar progressBar;
@@ -58,6 +66,8 @@ public class MainActivity extends Activity implements MainView, AdapterView.OnIt
 
     private Location mLocation;
     private LocationManager mLocationManager;
+    private TextView mLatitudeTextView;
+    private TextView mLongitudeTextView;
 
     private LocationRequest mLocationRequest;
     private long UPDATE_INTERVAL = 2 * 1000;  /* 10 secs */
@@ -65,14 +75,20 @@ public class MainActivity extends Activity implements MainView, AdapterView.OnIt
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        listView = (ListView) findViewById(R.id.list);
-        listView.setOnItemClickListener(this);
+        setContentView(R.layout.initial_map);
+
+        SupportMapFragment mapFragment =
+                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        /*listView = (ListView) findViewById(R.id.list);
+        listView.setOnItemClickListener(this);*/
         progressBar = (ProgressBar) findViewById(R.id.progress);
+
         presenter = new MainPresenterImpl(this, new FindItemsInteractorImpl());
 
-        /*TextView mLatitudeTextView = (TextView) findViewById((R.id.latitude_textview));
-        TextView mLongitudeTextView = (TextView) findViewById((R.id.longitude_textview));*/
+        /*mLatitudeTextView = (TextView) findViewById((R.id.latitude_textview));
+        mLongitudeTextView = (TextView) findViewById((R.id.longitude_textview));*/
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -81,12 +97,23 @@ public class MainActivity extends Activity implements MainView, AdapterView.OnIt
                 .build();
 
         mLocationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
+
+    }
+
+    /**
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we
+     * just add a marker near Africa.
+     */
+    @Override
+    public void onMapReady(GoogleMap map) {
+        map.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
     }
 
 
     @Override
     public void onConnected(Bundle bundle) {
-        /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -95,23 +122,19 @@ public class MainActivity extends Activity implements MainView, AdapterView.OnIt
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             return;
-        }*/
+        }
 
         //mLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-        /*if(mLocation == null){
+        if(mLocation == null){
             startLocationUpdates();
         }
         if (mLocation != null) {
-
             // mLatitudeTextView.setText(String.valueOf(mLocation.getLatitude()));
             //mLongitudeTextView.setText(String.valueOf(mLocation.getLongitude()));
         } else {
             Toast.makeText(this, "Location not Detected", Toast.LENGTH_SHORT).show();
-        }*/
-
-        mLocation.getLatitude();
-        mLocation.getLongitude();
+        }
 
         startLocationUpdates();
     }
@@ -241,17 +264,17 @@ public class MainActivity extends Activity implements MainView, AdapterView.OnIt
     }
 
     @Override public void showProgress() {
-        progressBar.setVisibility(View.VISIBLE);
-        listView.setVisibility(View.INVISIBLE);
+        /*progressBar.setVisibility(View.VISIBLE);
+        listView.setVisibility(View.INVISIBLE);*/
     }
 
     @Override public void hideProgress() {
-        progressBar.setVisibility(View.INVISIBLE);
-        listView.setVisibility(View.VISIBLE);
+        /*progressBar.setVisibility(View.INVISIBLE);
+        listView.setVisibility(View.VISIBLE);*/
     }
 
     @Override public void setItems(List<String> items) {
-        listView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items));
+        //listView.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, items));
     }
 
     @Override public void showMessage(String message) {
