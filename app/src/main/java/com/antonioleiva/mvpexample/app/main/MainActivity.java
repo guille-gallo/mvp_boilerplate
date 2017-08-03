@@ -45,6 +45,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -52,6 +53,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
+
+import static com.antonioleiva.mvpexample.app.R.id.map;
 
 public class MainActivity extends AppCompatActivity implements MainView,
         AdapterView.OnItemClickListener,GoogleApiClient.ConnectionCallbacks,
@@ -63,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
     private ProgressBar progressBar;
     private MainPresenter presenter;
     private GoogleApiClient mGoogleApiClient;
+    private GoogleMap googleMap;
 
     private Location mLocation;
     private LocationManager mLocationManager;
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
         setContentView(R.layout.initial_map);
 
         SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+                (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
         mapFragment.getMapAsync(this);
 
         /*listView = (ListView) findViewById(R.id.list);
@@ -107,9 +111,9 @@ public class MainActivity extends AppCompatActivity implements MainView,
      */
     @Override
     public void onMapReady(GoogleMap map) {
-        map.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+        //map.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
+        googleMap = map;
     }
-
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -192,15 +196,17 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
     @Override
     public void onLocationChanged(Location location) {
-
-        String msg = "Updated Location: " +
+        /*String msg = "Updated Location: " +
                 Double.toString(location.getLatitude()) + "," +
                 Double.toString(location.getLongitude());
-        /*mLatitudeTextView.setText(String.valueOf(location.getLatitude()));
-        mLongitudeTextView.setText(String.valueOf(location.getLongitude() ));*/
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        mLatitudeTextView.setText(String.valueOf(location.getLatitude()));
+        mLongitudeTextView.setText(String.valueOf(location.getLongitude() ));
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();*/
+
         // You can now create a LatLng Object for use with maps
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        googleMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
     }
 
     private boolean checkLocation() {
