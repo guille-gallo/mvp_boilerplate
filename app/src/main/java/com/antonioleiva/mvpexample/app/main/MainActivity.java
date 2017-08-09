@@ -45,7 +45,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -113,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements MainView,
     public void onMapReady(GoogleMap map) {
         //map.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
         googleMap = map;
+
+
     }
 
     @Override
@@ -141,6 +142,48 @@ public class MainActivity extends AppCompatActivity implements MainView,
         }
 
         startLocationUpdates();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        /*String msg = "Updated Location: " +
+                Double.toString(location.getLatitude()) + "," +
+                Double.toString(location.getLongitude());
+        mLatitudeTextView.setText(String.valueOf(location.getLatitude()));
+        mLongitudeTextView.setText(String.valueOf(location.getLongitude() ));
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();*/
+
+        /*
+        * -Mover creación markers a otro método.
+        * -Ver ventana para cuadras a elegir, ver cálculo distancia.
+        * -Sacar login activity,
+        *
+        * */
+
+        // Personal location
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        googleMap.addMarker(new MarkerOptions().position(latLng).title("Personal location"));
+        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
+
+        //"Gomería Los Gringos"
+        LatLng latLng2 = new LatLng(-32.969110, -60.642597);
+        googleMap.addMarker(new MarkerOptions().position(latLng2).title("Gomería Los Gringos"));
+
+        //"Neumáticos y Servicios Amante"
+        LatLng latLng3 = new LatLng(-32.968575, -60.629303);
+        googleMap.addMarker(new MarkerOptions().position(latLng3).title("Neumáticos y Servicios Amante"));
+
+        //"Gomeria Santa Fe 2378"
+        LatLng latLng4 = new LatLng(-32.941864, -60.655157);
+        googleMap.addMarker(new MarkerOptions().position(latLng4).title("Gomeria Santa Fe 2378"));
+
+        //"Gomería Rubén Cabral S.R.L."
+        LatLng latLng5 = new LatLng(-32.951314, -60.672555);
+        googleMap.addMarker(new MarkerOptions().position(latLng5).title("Gomería Rubén Cabral S.R.L."));
+
+        //"Gomería Occidente"
+        LatLng latLng6 = new LatLng(-32.937949, -60.653278);
+        googleMap.addMarker(new MarkerOptions().position(latLng6).title("Gomería Occidente"));
     }
 
     @Override
@@ -194,20 +237,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
         Log.d("reque", "--->>>>");
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        /*String msg = "Updated Location: " +
-                Double.toString(location.getLatitude()) + "," +
-                Double.toString(location.getLongitude());
-        mLatitudeTextView.setText(String.valueOf(location.getLatitude()));
-        mLongitudeTextView.setText(String.valueOf(location.getLongitude() ));
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();*/
 
-        // You can now create a LatLng Object for use with maps
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        googleMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
-    }
 
     private boolean checkLocation() {
         /*if(!isLocationEnabled())
