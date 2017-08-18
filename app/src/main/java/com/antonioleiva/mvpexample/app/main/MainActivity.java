@@ -19,7 +19,10 @@
 package com.antonioleiva.mvpexample.app.main;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -74,6 +77,9 @@ public class MainActivity extends AppCompatActivity implements MainView,
     private long UPDATE_INTERVAL = 2 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 2000; /* 2 sec */
 
+    private BroadcastReceiver yourReceiver;
+    private static final String ACTION_GPS = "android.location.PROVIDERS_CHANGED";
+
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.initial_map);
@@ -81,6 +87,9 @@ public class MainActivity extends AppCompatActivity implements MainView,
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
         mapFragment.getMapAsync(this);
+
+
+
 
         progressBar = (ProgressBar) findViewById(R.id.progress);
 
@@ -98,10 +107,20 @@ public class MainActivity extends AppCompatActivity implements MainView,
         mLocationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
     }
 
+    private void buildAlertMessageNoGps() {
+        Context context = getApplicationContext();
+        CharSequence text = "Por favor habilita el GPS para poder ubicarte";
+        int duration = Toast.LENGTH_LONG;
+
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+    }
+
     @Override
     public void onMapReady(GoogleMap map) {
         //map.addMarker(new MarkerOptions().position(new LatLng(0, 0)).title("Marker"));
         googleMap = map;
+
         createMarkers();
     }
 
@@ -171,6 +190,12 @@ public class MainActivity extends AppCompatActivity implements MainView,
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
+
+        // unregister the receiver
+        if (yourReceiver != null) {
+            unregisterReceiver(yourReceiver);
+            yourReceiver = null;
+        }
     }
 
     protected void startLocationUpdates() {
@@ -198,6 +223,41 @@ public class MainActivity extends AppCompatActivity implements MainView,
     @Override protected void onResume() {
         super.onResume();
         presenter.onResume();
+
+        checkGPS();
+        registerReceiverGPS();
+    }
+
+    private void checkGPS() {
+        /*
+        * check if GPS location enabled
+        * */
+        final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE );
+        if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+            buildAlertMessageNoGps();
+        }
+    }
+
+    private void registerReceiverGPS() {
+        if (yourReceiver == null) {
+            // INTENT FILTER FOR GPS MONITORING
+            final IntentFilter theFilter = new IntentFilter();
+            theFilter.addAction(ACTION_GPS);
+            yourReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (intent != null) {
+                        String s = intent.getAction();
+                        if (s != null) {
+                            if (s.equals(ACTION_GPS)) {
+                                checkGPS();
+                            }
+                        }
+                    }
+                }
+            };
+            registerReceiver(yourReceiver, theFilter);
+        }
     }
 
     @Override public boolean onCreateOptionsMenu(Menu menu) {
