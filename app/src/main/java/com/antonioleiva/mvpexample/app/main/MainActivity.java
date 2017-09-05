@@ -36,7 +36,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.antonioleiva.mvpexample.app.R;
@@ -68,10 +67,10 @@ public class MainActivity extends AppCompatActivity implements MainView,
     private GoogleApiClient mGoogleApiClient;
     private GoogleMap googleMap;
 
-    private Location mLocation;
-    private LocationManager mLocationManager;
-    private TextView mLatitudeTextView;
-    private TextView mLongitudeTextView;
+    //private Location mLocation;
+
+    //private TextView mLatitudeTextView;
+    //private TextView mLongitudeTextView;
 
     private LocationRequest mLocationRequest;
     private long UPDATE_INTERVAL = 2 * 1000;  /* 10 secs */
@@ -79,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
     private BroadcastReceiver yourReceiver;
     private static final String ACTION_GPS = "android.location.PROVIDERS_CHANGED";
+    private Context context;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,9 +87,6 @@ public class MainActivity extends AppCompatActivity implements MainView,
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
         mapFragment.getMapAsync(this);
-
-
-
 
         progressBar = (ProgressBar) findViewById(R.id.progress);
 
@@ -104,7 +101,8 @@ public class MainActivity extends AppCompatActivity implements MainView,
                 .addApi(LocationServices.API)
                 .build();
 
-        mLocationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
+        //mLocationManager = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
+
     }
 
     private void buildAlertMessageNoGps() {
@@ -122,6 +120,16 @@ public class MainActivity extends AppCompatActivity implements MainView,
         googleMap = map;
 
         createMarkers();
+        getLastKnownLocation(googleMap);
+
+        /*try {
+            Location location = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            googleMap.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_person_position)));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
+        } catch (SecurityException ex) {
+            buildAlertMessageNoGps();
+        }*/
     }
 
     @Override
@@ -226,7 +234,37 @@ public class MainActivity extends AppCompatActivity implements MainView,
 
         checkGPS();
         registerReceiverGPS();
+
     }
+
+    LocationManager mLocationManager;
+    //Location myLocation = getLastKnownLocation();
+    private Location getLastKnownLocation(GoogleMap googleMap) {
+        mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            try {
+                Location l = mLocationManager.getLastKnownLocation(provider);
+
+                if (l == null) {
+                    continue;
+                }
+                if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                    // Found best last known location: %s", l);
+                    bestLocation = l;
+                    // Personal location
+                    LatLng latLng = new LatLng(bestLocation.getLatitude(), bestLocation.getLongitude());
+                    googleMap.addMarker(new MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_person_position)));
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
+                }
+            } catch (SecurityException ex) {
+                showMessage(ex.toString());
+            }
+        }
+        return bestLocation;
+    }
+
 
     private void checkGPS() {
         /*
